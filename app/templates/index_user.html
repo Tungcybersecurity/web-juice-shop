@@ -1,0 +1,120 @@
+{% extends "base_user.html" %}
+
+{% block title %}Trang chủ - Juice Shop Python{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-home"></i> Chào mừng bạn đến với Juice Shop Python</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h5>🎉 Chào mừng bạn đã đăng nhập thành công!</h5>
+                        <p class="text-muted">Bây giờ bạn có thể:</p>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <i class="fas fa-box text-primary me-2"></i>
+                                <a href="/products" class="text-decoration-none">Xem danh sách sản phẩm</a>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-shopping-basket text-success me-2"></i>
+                                <a href="/cart" class="text-decoration-none">Thêm sản phẩm vào giỏ hàng</a>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-list text-info me-2"></i>
+                                <a href="/orders" class="text-decoration-none">Xem đơn hàng của bạn</a>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-user text-warning me-2"></i>
+                                <a href="/profile" class="text-decoration-none">Cập nhật hồ sơ cá nhân</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <i class="fas fa-user-circle fa-3x text-primary mb-3"></i>
+                                <h6>Thông tin tài khoản</h6>
+                                <p class="mb-2"><strong>Username:</strong> <span id="current-username">Người dùng</span></p>
+                                <p class="mb-2"><strong>Trạng thái:</strong> <span class="badge bg-success">Đã đăng nhập</span></p>
+                                <a href="/profile" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-edit"></i> Chỉnh sửa hồ sơ
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-box fa-2x text-primary mb-3"></i>
+                <h5>Khám phá sản phẩm</h5>
+                <p class="text-muted">Xem các sản phẩm nước ép tươi ngon</p>
+                <a href="/products" class="btn btn-primary">
+                    <i class="fas fa-arrow-right"></i> Xem sản phẩm
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-shopping-basket fa-2x text-success mb-3"></i>
+                <h5>Giỏ hàng</h5>
+                <p class="text-muted">Quản lý sản phẩm trong giỏ hàng</p>
+                <a href="/cart" class="btn btn-success">
+                    <i class="fas fa-shopping-cart"></i> Xem giỏ hàng
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-list fa-2x text-info mb-3"></i>
+                <h5>Đơn hàng</h5>
+                <p class="text-muted">Xem lịch sử đơn hàng của bạn</p>
+                <a href="/orders" class="btn btn-info">
+                    <i class="fas fa-history"></i> Xem đơn hàng
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Security Notice -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-warning">
+            <h6><i class="fas fa-exclamation-triangle"></i> Lưu ý bảo mật:</h6>
+            <p class="mb-0">
+                Đây là ứng dụng có chủ ý chứa lỗ hổng bảo mật để học tập OWASP Top 10. 
+                Không sử dụng thông tin cá nhân thật hoặc mật khẩu thật!
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set current username from Flask session
+    const username = '{{ session.get("username", "Người dùng") }}';
+    document.getElementById('current-username').textContent = username;
+    
+    // Update username in navbar
+    document.getElementById('username-display').textContent = username;
+});
+</script>
+{% endblock %} 

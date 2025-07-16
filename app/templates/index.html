@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}Trang chủ - Juice Shop Python{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="jumbotron bg-primary text-white rounded p-5 mb-4">
+    <div class="container">
+        <h1 class="display-4">
+            <i class="fas fa-shopping-cart"></i> Juice Shop Python
+        </h1>
+        <p class="lead">Ứng dụng web shop có lỗ hổng bảo mật để học tập OWASP Top 10</p>
+        <hr class="my-4">
+        <p>Khám phá các lỗ hổng bảo mật phổ biến và học cách khắc phục chúng.</p>
+        <a class="btn btn-light btn-lg" href="#" role="button">
+            <i class="fas fa-shopping-bag"></i> Mua sắm ngay
+        </a>
+    </div>
+</div>
+
+<!-- Search Section -->
+<div class="row mb-4">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-search"></i> Tìm kiếm sản phẩm</h5>
+            </div>
+            <div class="card-body">
+                <!-- Search form - static only -->
+                <form method="GET" action="#">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="q" 
+                               placeholder="Nhập tên sản phẩm...">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search"></i> Tìm kiếm
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Static search result example -->
+                <div class="mt-3" id="search-result" style="display: none;">
+                    <h6>Kết quả tìm kiếm cho: <span id="search-term">iPhone</span></h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Products -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h3><i class="fas fa-star"></i> Sản phẩm nổi bật</h3>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Static product cards -->
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                <i class="fas fa-laptop fa-3x text-muted"></i>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">MacBook Pro 2024</h5>
+                <p class="card-text">Laptop cao cấp với chip M3 Pro, màn hình 14 inch Retina</p>
+                <p class="card-text"><strong>Giá: 45,000,000 VNĐ</strong></p>
+                <a href="#" class="btn btn-primary">
+                    <i class="fas fa-eye"></i> Xem chi tiết
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                <i class="fas fa-mobile-alt fa-3x text-muted"></i>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">iPhone 15 Pro</h5>
+                <p class="card-text">Điện thoại thông minh với camera 48MP, chip A17 Pro</p>
+                <p class="card-text"><strong>Giá: 28,000,000 VNĐ</strong></p>
+                <a href="#" class="btn btn-primary">
+                    <i class="fas fa-eye"></i> Xem chi tiết
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                <i class="fas fa-headphones fa-3x text-muted"></i>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">AirPods Pro 2</h5>
+                <p class="card-text">Tai nghe không dây với chống ồn chủ động</p>
+                <p class="card-text"><strong>Giá: 6,500,000 VNĐ</strong></p>
+                <a href="#" class="btn btn-primary">
+                    <i class="fas fa-eye"></i> Xem chi tiết
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Categories -->
+<div class="row mb-4">
+    <div class="col-12">
+        <h3><i class="fas fa-tags"></i> Danh mục sản phẩm</h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-laptop fa-2x text-primary mb-2"></i>
+                <h5 class="card-title">Máy tính</h5>
+                <a href="#" class="btn btn-outline-primary">
+                    Xem sản phẩm
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-mobile-alt fa-2x text-success mb-2"></i>
+                <h5 class="card-title">Điện thoại</h5>
+                <a href="#" class="btn btn-outline-success">
+                    Xem sản phẩm
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-headphones fa-2x text-warning mb-2"></i>
+                <h5 class="card-title">Phụ kiện</h5>
+                <a href="#" class="btn btn-outline-warning">
+                    Xem sản phẩm
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-gamepad fa-2x text-danger mb-2"></i>
+                <h5 class="card-title">Gaming</h5>
+                <a href="#" class="btn btn-outline-danger">
+                    Xem sản phẩm
+                </a>    
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Information -->
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Thông tin hệ thống</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Thông tin ứng dụng:</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Phiên bản:</strong> 1.0.0</li>
+                            <li><strong>Framework:</strong> Flask</li>
+                            <li><strong>Database:</strong> SQLite</li>
+                            <li><strong>Debug Mode:</strong> Enabled</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Thông tin server:</h6>
+                        <ul class="list-unstyled">
+                            <li><strong>Server:</strong> Development Server</li>
+                            <li><strong>Python:</strong> 3.12.0</li>
+                            <li><strong>Host:</strong> localhost:5000</li>
+                            <li><strong>Path:</strong> /</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Static JavaScript -->
+<script>
+// Static JavaScript - no dynamic data
+document.addEventListener('DOMContentLoaded', function() {
+    // Show search result when form is submitted
+    const searchForm = document.querySelector('form');
+    const searchResult = document.getElementById('search-result');
+    const searchInput = document.querySelector('input[name="q"]');
+    
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const query = searchInput.value;
+        if (query.trim()) {
+            document.getElementById('search-term').textContent = query;
+            searchResult.style.display = 'block';
+        }
+    });
+    
+    // Static welcome message
+    const welcomeDiv = document.createElement('div');
+    welcomeDiv.className = 'alert alert-info';
+    welcomeDiv.innerHTML = 'Chào mừng bạn đến với Juice Shop Python!';
+    document.querySelector('.jumbotron').appendChild(welcomeDiv);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Đăng nhập - Juice Shop Python{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card">
+            <div class="card-header text-center">
+                <h4><i class="fas fa-sign-in-alt"></i> Đăng nhập</h4>
+            </div>
+            <div class="card-body">
+                <!-- Static login form -->
+                <form method="POST" action="/auth/login" id="login-form">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email hoặc Username</label>
+                        <input type="text" class="form-control" id="email" name="email" 
+                               placeholder="Nhập email hoặc username" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Mật khẩu</label>
+                        <input type="password" class="form-control" id="password" name="password" 
+                               placeholder="Nhập mật khẩu" required>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                        <label class="form-check-label" for="remember">
+                            Ghi nhớ đăng nhập
+                        </label>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                        </button>
+                    </div>
+                </form>
+                
+                <hr>
+                
+                <div class="text-center mt-3">
+                    <span>Chưa có tài khoản? </span>
+                    <a href="/auth/register" class="text-decoration-none">
+                        <i class="fas fa-user-plus"></i> Đăng ký ngay
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+       
+    </div>
+</div>
+
+
+<!-- Static JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle login form submission
+    const loginForm = document.getElementById('login-form');
+    loginForm.addEventListener('submit', function(e) {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        if (!email || !password) {
+            e.preventDefault();
+            alert('Vui lòng nhập đầy đủ thông tin!');
+            return;
+        }
+        
+        // If validation passes, form will submit normally via POST to /auth/login
+    });
+    
+});
+</script>
+{% endblock %}

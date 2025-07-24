@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template,session
 from flask_sqlalchemy import SQLAlchemy
 import os
 import sqlite3
@@ -21,12 +21,16 @@ from app.routes.auth import auth_bp
 from app.routes.products import products_bp
 from app.routes.orders import orders_bp
 from app.routes.api import api_bp
+from app.routes.carts import carts_bp
+from app.routes.profile import profile_bp
 
 # Đăng ký blueprints với URL prefix
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(products_bp, url_prefix='/products')
 app.register_blueprint(orders_bp, url_prefix='/orders')
 app.register_blueprint(api_bp, url_prefix='/api')
+app.register_blueprint(carts_bp, url_prefix='/cart')
+app.register_blueprint(profile_bp)
 
 # Route trang chủ
 @app.route('/')
@@ -74,10 +78,11 @@ def init_database():
     
     print("✅ Database đã được khởi tạo thành công!")
 
+
 if __name__ == '__main__':
     # Khởi tạo database
     init_database()
-    
+    # Xóa session cũ
     # Chạy app
     print("🚀 Khởi động Flask app...")
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='127.0.0.1', port=5000)

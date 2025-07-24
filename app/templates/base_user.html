@@ -49,6 +49,20 @@
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+        html, body {
+            height: 100%;
+        }
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        main.container {
+            flex: 1 0 auto;
+        }
+        footer {
+            flex-shrink: 0;
+        }
     </style>
     
     {% block extra_css %}{% endblock %}
@@ -73,7 +87,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/products/all-products">
+                        <a class="nav-link" href="/products/all-protducs">
                             <i class="fas fa-box"></i> Sản phẩm
                         </a>
                     </li>
@@ -88,11 +102,11 @@
                             <i class="fas fa-list"></i> Đơn hàng của tôi
                         </a>
                     </li>
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a class="nav-link" href="/profile">
                             <i class="fas fa-user"></i> Hồ sơ
                         </a>
-                    </li>
+                    </li> -->
                 </ul>
                 
                 <ul class="navbar-nav">
@@ -107,7 +121,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                             <li>
-                                <a class="dropdown-item" href="/profile">
+                                <a class="dropdown-item" href="/update-profile">
                                     <i class="fas fa-user-circle me-2"></i>Hồ sơ cá nhân
                                 </a>
                             </li>
@@ -158,6 +172,7 @@
     </footer>
 
     <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- User-specific JavaScript -->

@@ -9,22 +9,28 @@ def index():
     # Kiểm tra xem user đã đăng nhập chưa
     if session.get('logged_in'):
         # Nếu đã đăng nhập, render template cho user
+        print("Đã đăng nhập")
         return render_template('index_user.html')
     else:
+        print("Chưa đăng nhập")
         # Nếu chưa đăng nhập, render template cho guest
         return render_template('index.html')
 
-@products_bp.route('/all-products')
+@products_bp.route('/all-protducs', methods=['GET', 'POST'],strict_slashes=False)
 def list_products():
     """Hiển thị danh sách sản phẩm"""
     search_term = request.args.get('search')
-    
+    print(search_term)
     if search_term:
         products = search_products(search_term)
+        print(products)
     else:
         products = get_all_products()
     
-    return render_template('products.html', products=products)
+    if session.get('logged_in'):
+        return render_template('products_user.html', products=products)
+    else:
+        return render_template('products.html', products=products)
 
 @products_bp.route('/detail-products/<int:product_id>')
 def product_detail(product_id):
@@ -45,6 +51,14 @@ def product_detail(product_id):
         return jsonify(product_data)
     else:
         return jsonify({'error': 'Sản phẩm không tồn tại'}), 404
+
+@products_bp.route('/view/<int:product_id>')
+def view_product(product_id):
+    product = get_product_by_id(product_id)
+    if product:
+        return render_template('product_detail.html', product=product)
+    else:
+        return render_template('404.html'), 404
 
 @products_bp.route('/api/products')
 def api_products():

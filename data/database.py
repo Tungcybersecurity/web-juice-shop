@@ -7,7 +7,10 @@ create_users_table_sql = '''CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username VARCHAR(80) UNIQUE NOT NULL,
     email VARCHAR(120) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL
+    password_hash VARCHAR(255) NOT NULL,
+    name TEXT NULL,
+    address TEXT NULL,
+    phone TEXT NULL
 );'''
 
 create_products_table_sql = '''CREATE TABLE products (
@@ -309,24 +312,158 @@ def get_product_by_id(product_id):
         return None
 
 def search_products(search_term):
-    """Search products by name or description"""
-    search_products_sql = '''SELECT * FROM products 
-                            WHERE name LIKE ? OR description LIKE ?
-                            ORDER BY created_at DESC'''
-    
+    """Search products by name or description (VULNERABLE TO SQLi)"""
+    # LỖ HỔNG: Nối trực tiếp search_term vào truy vấn SQL
+    search_products_sql = f"""SELECT * FROM products \
+                            WHERE name LIKE '%{search_term}%' OR description LIKE '%{search_term}%'
+                            ORDER BY created_at DESC"""
     try:
         conn = get_connection()
         cursor = conn.cursor()
-        
-        search_pattern = f"%{search_term}%"
-        cursor.execute(search_products_sql, (search_pattern, search_pattern))
+        cursor.execute(search_products_sql)
         products = cursor.fetchall()
-        
         conn.close()
         return products
-        
     except Exception as e:
         print(f"Error searching products: {e}")
-        return [] 
+        return []
+
+def add_order(user_id, total_amount):
+    """Thêm đơn hàng mới với trạng thái 'processing'"""
+    insert_order_sql = '''INSERT INTO orders (user_id, total_amount, status) VALUES (?, ?, 'processing')'''
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(insert_order_sql, (user_id, total_amount))
+        conn.commit()
+        order_id = cursor.lastrowid
+        conn.close()
+        return order_id
+    except Exception as e:
+        print(f"Error adding order: {e}")
+        return None
+
+def get_orders_by_user(user_id):
+    """Lấy danh sách đơn hàng của user"""
+    select_sql = '''SELECT id, total_amount, status, created_at FROM orders WHERE user_id = ? ORDER BY created_at DESC'''
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(select_sql, (user_id,))
+        orders = cursor.fetchall()
+        conn.close()
+        return orders
+    except Exception as e:
+        print(f"Error getting orders: {e}")
+        return []
+
+def cancel_order(order_id, user_id):
+    """Hủy đơn hàng (chỉ cho phép user hủy đơn của mình nếu trạng thái là 'processing')"""
+    update_sql = '''UPDATE orders SET status = 'cancelled' WHERE id = ? AND user_id = ? AND status = 'processing' '''
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(update_sql, (order_id, user_id))
+        conn.commit()
+        affected = cursor.rowcount
+        conn.close()
+        return affected > 0
+    except Exception as e:
+        print(f"Error cancelling order: {e}")
+        return False
+
+def update_order_status(order_id, status):
+    """Cập nhật trạng thái đơn hàng (admin hoặc hệ thống dùng)"""
+    update_sql = '''UPDATE orders SET status = ? WHERE id = ?'''
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(update_sql, (status, order_id))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"Error updating order status: {e}")
+        return False 
+
+def add_to_cart(user_id, product_id, quantity=1):
+    """Thêm sản phẩm vào giỏ hàng. Nếu đã có thì tăng số lượng."""
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        # Kiểm tra đã có sản phẩm này trong giỏ chưa
+        cursor.execute('SELECT quantity FROM baskets WHERE user_id = ? AND product_id = ?', (user_id, product_id))
+        row = cursor.fetchone()
+        if row:
+            # Đã có, tăng số lượng
+            cursor.execute('UPDATE baskets SET quantity = quantity + ? WHERE user_id = ? AND product_id = ?', (quantity, user_id, product_id))
+        else:
+            # Chưa có, thêm mới
+            cursor.execute('INSERT INTO baskets (user_id, product_id, quantity) VALUES (?, ?, ?)', (user_id, product_id, quantity))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"Error adding to cart: {e}")
+        return False
+
+def get_cart(user_id):
+    """Lấy danh sách sản phẩm trong giỏ hàng của user, join với bảng products."""
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT b.product_id, p.name, p.price, b.quantity, p.image
+            FROM baskets b
+            JOIN products p ON b.product_id = p.id
+            WHERE b.user_id = ?
+        ''', (user_id,))
+        items = cursor.fetchall()
+        conn.close()
+        return items
+    except Exception as e:
+        print(f"Error getting cart: {e}")
+        return []
+
+def remove_from_cart(user_id, product_id):
+    """Xóa một sản phẩm khỏi giỏ hàng."""
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM baskets WHERE user_id = ? AND product_id = ?', (user_id, product_id))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"Error removing from cart: {e}")
+        return False
+
+def clear_cart(user_id):
+    """Xóa toàn bộ giỏ hàng của user."""
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM baskets WHERE user_id = ?', (user_id,))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"Error clearing cart: {e}")
+        return False 
+
+
+def update_profile(username, name, address, phone):
+    """Cập nhật thông tin profile cho user"""
+    update_sql = '''UPDATE users SET name = ?, address = ?, phone = ? WHERE username = ?'''
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute(update_sql, (name, address, phone, username))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"Error updating profile: {e}")
+        return False 
 
 

@@ -13,7 +13,15 @@ def execute_command():
 # VULNERABLE: File read endpoint
 @api_bp.route('/api/read-file', methods=['POST'])
 def read_file():
-    return jsonify({'error': 'Command execution is disabled for security reasons'}), 403
+    # LỖ HỔNG: Nhận đường dẫn file từ user và đọc trực tiếp
+    data = request.get_json()
+    filepath = data.get('path')
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            content = f.read()
+        return jsonify({'content': content})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
 
 # VULNERABLE: File write endpoint
 @api_bp.route('/api/write-file', methods=['POST'])
@@ -52,7 +60,14 @@ def deserialize_data():
 # VULNERABLE: Directory traversal endpoint
 @api_bp.route('/api/list-directory', methods=['POST'])
 def list_directory():
-    return jsonify({'error': 'Command execution is disabled for security reasons'}), 403
+    # LỖ HỔNG: Nhận đường dẫn thư mục từ user và liệt kê trực tiếp
+    data = request.get_json()
+    dirpath = data.get('path')
+    try:
+        files = os.listdir(dirpath)
+        return jsonify({'files': files})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
 
 # VULNERABLE: Environment variables exposure
 @api_bp.route('/api/env')

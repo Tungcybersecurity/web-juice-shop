@@ -1,4 +1,4 @@
-{% extends "base_user.html" %}
+{% extends "base.html" %}
 
 {% block title %}Sản phẩm - Juice Shop Python{% endblock %}
 
@@ -9,7 +9,7 @@
             <h2><i class="fas fa-box"></i> Danh sách sản phẩm</h2>
             <div class="d-flex gap-2">
                 <!-- Search form -->
-                <form class="d-flex" method="GET" action="/products">
+                <form class="d-flex" method="GET" action="/products/all-protducs">
                     <input class="form-control me-2" type="search" name="search" 
                            placeholder="Tìm kiếm sản phẩm..." value="{{ request.args.get('search', '') }}">
                     <button class="btn btn-outline-primary" type="submit">
@@ -72,18 +72,14 @@
                     
                     <!-- Action Buttons -->
                     <div class="d-grid gap-2">
-                        {% if product[4] > 0 %}
-                            <button class="btn btn-primary add-to-cart-btn" 
-                                    data-product-name="{{ product[1] }}">
+                        <form method="post" action="/cart/add" class="d-grid">
+                            <input type="hidden" name="product_id" value="{{ product[0] }}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-success w-100">
                                 <i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng
                             </button>
-                        {% else %}
-                            <button class="btn btn-secondary" disabled>
-                                <i class="fas fa-times"></i> Hết hàng
-                            </button>
-                        {% endif %}
-                        
-                        <button class="btn btn-outline-info btn-sm view-details-btn">
+                        </form>
+                        <button type="button" class="btn btn-outline-info btn-sm view-details-btn" data-product-id="{{ product[0] }}">
                             <i class="fas fa-eye"></i> Xem chi tiết
                         </button>
                     </div>
@@ -98,7 +94,7 @@
                 <h4 class="text-muted">Không tìm thấy sản phẩm</h4>
                 <p class="text-muted">
                     {% if request.args.get('search') %}
-                        Không có sản phẩm nào phù hợp với từ khóa "{{ request.args.get('search') }}"
+                        Không có sản phẩm nào phù hợp với từ khóa "{{ request.args.get('search')|safe }}"
                     {% else %}
                         Hiện tại chưa có sản phẩm nào trong hệ thống
                     {% endif %}
@@ -112,24 +108,18 @@
 </div>
 
 <!-- Product Details Modal -->
-<div class="modal fade" id="productModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="productModalTitle">Chi tiết sản phẩm</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="productModalBody">
-                <!-- Content will be loaded dynamically -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary" id="modalAddToCart">
-                    <i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng
-                </button>
-            </div>
-        </div>
+<div class="modal fade" id="productDetailModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="productDetailTitle">Chi tiết sản phẩm</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="productDetailBody">
+        <!-- Nội dung chi tiết sẽ được load bằng JS -->
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}
 
@@ -223,165 +213,48 @@
         font-size: 0.85rem;
     }
 }
+    .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
 </style>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Add to cart functionality
-    const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
-    addToCartButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Lấy product ID từ thẻ hidden trong cùng card
-            const productCard = this.closest('.product-card');
-            const productIdInput = productCard.querySelector('.product-id');
-            const productId = productIdInput.value;
-            const productName = this.getAttribute('data-product-name');
-            
-            // Show loading state
-            const originalText = this.innerHTML;
-            this.innerHTML = '<span class="loading"></span> Đang thêm...';
-            this.disabled = true;
-            
-            // Simulate API call (replace with actual API call)
-            setTimeout(() => {
-                // Reset button state
-                this.innerHTML = originalText;
-                this.disabled = false;
-                
-                // Show success message
-                showAlert('success', `Đã thêm "${productName}" vào giỏ hàng!`);
-                
-                // Update cart count (if you have a cart counter)
-                updateCartCount();
-            }, 1000);
+$(document).ready(function() {
+    $(document).on('click', '.view-details-btn', function() {
+        var productId = $(this).data('product-id');
+        $.get('/products/detail-products/' + productId, function(data) {
+            if(data && !data.error) {
+                var html = `
+                    <div class="row">
+                        <div class="col-md-5">
+                            <img src="${data.image}" class="img-fluid rounded mb-3" alt="${data.name}">
+                        </div>
+                        <div class="col-md-7">
+                            <h4>${data.name}</h4>
+                            <p>${data.description}</p>
+                            <p><strong>Giá:</strong> <span class="text-primary h5">${data.price.toLocaleString()} VNĐ</span></p>
+                            <p><strong>Còn lại:</strong> ${data.stock}</p>
+                            <p><i class="fas fa-calendar"></i> ${data.created_at ? data.created_at.substring(0,10) : ''}</p>
+                        </div>
+                    </div>
+                `;
+                $('#productDetailTitle').text(data.name);
+                $('#productDetailBody').html(html);
+                var modal = new bootstrap.Modal(document.getElementById('productDetailModal'));
+                modal.show();
+            } else {
+                $('#productDetailTitle').text('Lỗi');
+                $('#productDetailBody').html('<div class="alert alert-danger">Không thể tải thông tin sản phẩm.</div>');
+                var modal = new bootstrap.Modal(document.getElementById('productDetailModal'));
+                modal.show();
+            }
         });
-    });
-    
-    // View details functionality
-    const viewDetailsButtons = document.querySelectorAll('.view-details-btn');
-    viewDetailsButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Lấy product ID từ thẻ hidden trong cùng card
-            const productCard = this.closest('.product-card');
-            const productIdInput = productCard.querySelector('.product-id');
-            const productId = productIdInput.value;
-            
-            showProductDetails(productId);
-        });
-    });
-    
-    // Modal add to cart
-    document.getElementById('modalAddToCart').addEventListener('click', function() {
-        const productId = this.getAttribute('data-product-id');
-        const productName = this.getAttribute('data-product-name');
-        
-        // Close modal
-        const modal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
-        modal.hide();
-        
-        // Add to cart
-        showAlert('success', `Đã thêm "${productName}" vào giỏ hàng!`);
-        updateCartCount();
     });
 });
-
-function showProductDetails(productId) {
-    // Show loading in modal
-    document.getElementById('productModalTitle').textContent = 'Đang tải...';
-    document.getElementById('productModalBody').innerHTML = '<div class="text-center"><span class="loading"></span></div>';
-    
-    // Show modal
-    const modal = new bootstrap.Modal(document.getElementById('productModal'));
-    modal.show();
-    
-    // Gọi API để lấy chi tiết sản phẩm
-    fetch(`/products/detail-products/${productId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Không thể tải thông tin sản phẩm');
-            }
-            return response.json();
-        })
-        .then(product => {
-            displayProductDetails(product);
-        })
-        .catch(error => {
-            console.error('Lỗi:', error);
-            document.getElementById('productModalTitle').textContent = 'Lỗi';
-            document.getElementById('productModalBody').innerHTML = `
-                <div class="text-center text-danger">
-                    <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
-                    <p>Không thể tải thông tin sản phẩm</p>
-                    <small>${error.message}</small>
-                </div>
-            `;
-        });
-}
-
-function displayProductDetails(product) {
-    document.getElementById('productModalTitle').textContent = product.name;
-    document.getElementById('modalAddToCart').setAttribute('data-product-id', product.id);
-    document.getElementById('modalAddToCart').setAttribute('data-product-name', product.name);
-    
-    // Format price
-    const formattedPrice = new Intl.NumberFormat('vi-VN').format(product.price);
-    
-    // Format date if exists
-    const createdDate = product.created_at ? new Date(product.created_at).toLocaleDateString('vi-VN') : 'N/A';
-    
-    const modalBody = document.getElementById('productModalBody');
-    modalBody.innerHTML = `
-        <div class="row">
-            <div class="col-md-6">
-                <img src="${product.image}" class="img-fluid rounded" alt="${product.name}" 
-                     onerror="this.src='/static/images/orange-juice.jpg'">
-            </div>
-            <div class="col-md-6">
-                <h5 class="text-primary">${product.name}</h5>
-                <p class="text-muted">${product.description}</p>
-                <div class="mb-3">
-                    <strong class="h4 text-success">${formattedPrice} VNĐ</strong>
-                </div>
-                <div class="mb-3">
-                    <span class="badge ${product.stock > 0 ? 'bg-success' : 'bg-danger'}">
-                        ${product.stock > 0 ? `Còn ${product.stock} sản phẩm` : 'Hết hàng'}
-                    </span>
-                </div>
-                <small class="text-muted">
-                    <i class="fas fa-calendar"></i> Ngày tạo: ${createdDate}
-                </small>
-            </div>
-        </div>
-    `;
-}
-
-function showAlert(type, message) {
-    // Create alert element
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    
-    // Add to page
-    document.body.appendChild(alertDiv);
-    
-    // Auto remove after 3 seconds
-    setTimeout(() => {
-        if (alertDiv.parentNode) {
-            alertDiv.remove();
-        }
-    }, 3000);
-}
-
-function updateCartCount() {
-    // This would update the cart count in the navbar
-    // For now, just log the action
-    console.log('Cart count updated');
-}
 </script>
 {% endblock %} 

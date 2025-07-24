@@ -1,0 +1,9 @@
+1. SQL Injection
+Đã sửa hàm search_products trong data/database.py để nối trực tiếp biến search_term vào truy vấn SQL, cho phép thực hiện SQL injection qua tham số tìm kiếm sản phẩm.
+2. XSS Reflection
+Đã sửa template profile.html để hiển thị các trường name, address, phone với filter |safe, cho phép chèn mã độc XSS.
+Đã sửa template products.html để hiển thị lại từ khóa tìm kiếm với filter |safe khi không tìm thấy sản phẩm.
+3. Path Traversal
+Đã mở lại chức năng đọc file (/api/read-file) và liệt kê thư mục (/api/list-directory) trong app/routes/api.py, cho phép nhập đường dẫn tùy ý và thao tác trực tiếp với hệ thống file.
+4. CSRF
+Đã thêm chú thích lỗ hổng vào các route POST trong carts.py, orders.py, profile.py để nhấn mạnh không có CSRF protection (không có token, không kiểm tra gì).

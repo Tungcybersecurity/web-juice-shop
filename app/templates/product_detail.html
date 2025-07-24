@@ -1,0 +1,22 @@
+{% extends "base_user.html" %}
+{% block title %}Chi tiết sản phẩm{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img src="{{ product[5] or '/static/images/orange-juice.jpg' }}" class="img-fluid rounded-start" alt="{{ product[1] }}">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product[1] }}</h5>
+                    <p class="card-text">{{ product[2] }}</p>
+                    <p class="card-text"><strong>Giá:</strong> {{ "{:,}".format(product[3]) }} VNĐ</p>
+                    <p class="card-text"><strong>Còn lại:</strong> {{ product[4] }}</p>
+                    <p class="card-text"><small class="text-muted">Ngày tạo: {{ product[6][:16] }}</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

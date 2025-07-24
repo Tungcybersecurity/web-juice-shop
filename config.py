@@ -13,7 +13,7 @@ class Config:
     WTF_CSRF_ENABLED = False  # Disabled for demo purposes (vulnerable)
     SESSION_COOKIE_SECURE = False
     SESSION_COOKIE_HTTPONLY = True
-    PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
+    PERMANENT_SESSION_LIFETIME = timedelta(minutes=5)
     
     # Flask-Login
     LOGIN_DISABLED = False
